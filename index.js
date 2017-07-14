@@ -11,18 +11,19 @@ app.use(express.static(__dirname + '/public'));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
-app.get('/index', function (request, response) {
+app.get('/', function (request, response) {
     response.render('pages/index');
 });
 
-var regex = /<h2><a target="_blank" href="(.+?)">(.+?)<\/a><\/h2>[\s\S]+?更新: <span>(.+?)<\/span>/g;
+var regex = /<h2><a target="_blank" href="(.+?)">(.+?)<\/a><\/h2>[\s\S]+?豆瓣：<b>(.+?)<\/b>[\s\S]+?更新: <span>(.+?)<\/span>/g;
 var regexArticle = /<div class="detail"[\s\S]+?<\/div>([\s\S]+)<div class="bdsharebuttonbox/g;
 
-app.get('/', function (input, output) {
+app.get('/dy', function (input, output) {
     var feed = new Feed({
         title: 'dysfz',
         id: 'dysfz',
-        updated: new Date()
+        updated: new Date(),
+        favicon: 'http://qapla.herokuapp.com/favicon.ico'
     });
 
     request('http://www.dysfz.cc', function (error, response, body) {
@@ -40,8 +41,8 @@ app.get('/', function (input, output) {
             (function (theMatch) {
                 count++;
                 var url = theMatch[1];
-                var title = theMatch[2];
-                var date = new Date(theMatch[3]);
+                var title = theMatch[2] + "[" + theMatch[3] + "]";
+                var date = new Date(theMatch[4]);
                 console.log(url);
                 request(url, function (articleError, articleResponse, articleBody) {
                     countDone++;
@@ -61,6 +62,7 @@ app.get('/', function (input, output) {
                             date: date
                         });
                     }
+
                     if (countFinal == countDone) {
                         console.log(real);
                         console.log("countFinal " + countDone);
