@@ -15,7 +15,7 @@ app.get('/', function (request, response) {
     response.render('pages/index');
 });
 
-var regex = /<h2><a target="_blank" href="(.+?)">(.+?)<\/a><\/h2>[\s\S]+?"des clearfix">([\s\S]+?)<a class="pic fl"[\s\S]+?更新: <span>(.+?)<\/span>/g;
+var regex = /<h2><a target="_blank" href="(.+?)">(.+?)<\/a><\/h2>[\s\S]+?"des clearfix">([\s\S]+?)\s*<a class="pic fl"[\s\S]+?更新: <span>(.+?)<\/span>/g;
 var regexArticle = /<div class="detail"[\s\S]+?<\/div>([\s\S]+)<div class="bdsharebuttonbox/g;
 
 app.get('/dysfz', function (input, output) {
@@ -31,18 +31,15 @@ app.get('/dysfz', function (input, output) {
         console.log('error:', error); // Print the error if one occurred
         console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
         //console.log('body:', body); // Print the HTML for the Google homepage.
-        // var r = request.post('https://requestb.in/1f7r05d1', function (errorXML, responseXML, bodyXML) {
-        //     console.log('error:', errorXML); // Print the error if one occurred
-        //     console.log('statusCode:', responseXML && responseXML.statusCode); // Print the response status code if a response was received
-        //     console.log('body:', bodyXML);
-        // });
         var count = 0, countFinal, countDone = 0;
         var real = 0;
+        var contentStr = '';
         while (match = regex.exec(body)) {
             (function (theMatch) {
                 count++;
                 var url = theMatch[1];
-                var title = theMatch[2] + theMatch[3];
+                //https://stackoverflow.com/questions/1499889/remove-html-tags-in-javascript-with-regex
+                var title = theMatch[2] + theMatch[3].replace(/(<([^>]+)>)/ig, '');
                 var articleDate = new Date(theMatch[4]);
                 if (articleDate > date) {
                     articleDate = date;
@@ -59,6 +56,7 @@ app.get('/dysfz', function (input, output) {
                     if (articleMatch = regexArticle.exec(articleBody)) {
                         real++;
                         console.log(this.href);
+                        contentStr += title + " - " + url + "\n\n";
                         feed.addItem({
                             title: title,
                             id: url,
@@ -72,7 +70,27 @@ app.get('/dysfz', function (input, output) {
                         console.log("countMatch " + real);
                         console.log("countFinal " + countDone);
                         var atom1 = feed.atom1();
+
+                        //sent to another service
+                        var options = {
+                            url: 'https://api.pushbullet.com/v2/pushes',
+                            headers: {
+                                'Access-Token': 'o.5DKAmyvLxIB5oSrgx5BqXGFmlWdHUaiR',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                title: 'dysfz',
+                                type: 'note',
+                                body: contentStr.slice(0, -2)
+                            })
+                        };
+                        var r = request.post(options, function (errorXML, responseXML, bodyXML) {
+                            console.log('error:', errorXML); // Print the error if one occurred
+                            console.log('statusCode:', responseXML && responseXML.statusCode); // Print the response status code if a response was received
+                            console.log('body:', bodyXML);
+                        });
                         //r.form(atom1);
+
                         output.send(atom1);
                     }
                 });
