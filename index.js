@@ -15,15 +15,16 @@ app.get('/', function (request, response) {
     response.render('pages/index');
 });
 
-var regex = /<h2><a target="_blank" href="(.+?)">(.+?)<\/a><\/h2>[\s\S]+?豆瓣：<b>(.+?)<\/b>[\s\S]+?更新: <span>(.+?)<\/span>/g;
+var regex = /<h2><a target="_blank" href="(.+?)">(.+?)<\/a><\/h2>[\s\S]+?"des clearfix">([\s\S]+?)<a class="pic fl"[\s\S]+?更新: <span>(.+?)<\/span>/g;
 var regexArticle = /<div class="detail"[\s\S]+?<\/div>([\s\S]+)<div class="bdsharebuttonbox/g;
 
-app.get('/dy', function (input, output) {
+app.get('/dysfz', function (input, output) {
+    var date = new Date();
     var feed = new Feed({
         title: 'dysfz',
         id: 'dysfz',
-        updated: new Date(),
-        favicon: 'http://qapla.herokuapp.com/favicon.ico'
+        updated: date,
+        favicon: 'https://qapla.herokuapp.com/favicon.ico'
     });
 
     request('http://www.dysfz.cc', function (error, response, body) {
@@ -41,12 +42,15 @@ app.get('/dy', function (input, output) {
             (function (theMatch) {
                 count++;
                 var url = theMatch[1];
-                var title = theMatch[2] + "[" + theMatch[3] + "]";
-                var date = new Date(theMatch[4]);
+                var title = theMatch[2] + theMatch[3];
+                var articleDate = new Date(theMatch[4]);
+                if (articleDate > date) {
+                    articleDate = date;
+                }
                 console.log(url);
                 request(url, function (articleError, articleResponse, articleBody) {
                     countDone++;
-                    console.log("current " + countDone);
+                    console.log("doing " + countDone);
                     if (error) {
                         return console.error('failed:', error);
                     }
@@ -54,17 +58,18 @@ app.get('/dy', function (input, output) {
                     articleBody = articleBody.replace(/style="[^"]{38,}?"/g, '');
                     if (articleMatch = regexArticle.exec(articleBody)) {
                         real++;
+                        console.log(this.href);
                         feed.addItem({
                             title: title,
                             id: url,
                             link: url,
                             content: articleMatch[1],
-                            date: date
+                            date: articleDate
                         });
                     }
 
                     if (countFinal == countDone) {
-                        console.log(real);
+                        console.log("countMatch " + real);
                         console.log("countFinal " + countDone);
                         var atom1 = feed.atom1();
                         //r.form(atom1);
