@@ -18,7 +18,11 @@ app.get('/', function (request, response) {
 var regex = /<h2><a target="_blank" href="(.+?)">(.+?)<\/a><\/h2>[\s\S]+?"des clearfix">([\s\S]+?)\s*<a class="pic fl"[\s\S]+?更新: <span>(.+?)<\/span>/g;
 var regexArticle = /<div class="detail"[\s\S]+?<\/div>([\s\S]+)<div class="bdsharebuttonbox/g;
 
-app.get('/dysfz', function (input, output) {
+require('./shaw')(app);
+
+app.get('/dysfz', function (req, res) {
+    var userAgent = req.headers['user-agent'];
+    var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     var date = new Date();
     var feed = new Feed({
         title: 'dysfz',
@@ -33,7 +37,7 @@ app.get('/dysfz', function (input, output) {
         //console.log('body:', body); // Print the HTML for the Google homepage.
         var count = 0, countFinal, countDone = 0;
         var real = 0;
-        var contentStr = '';
+        var contentStr = ip + ' ' + userAgent;
         while (match = regex.exec(body)) {
             (function (theMatch) {
                 count++;
@@ -56,7 +60,7 @@ app.get('/dysfz', function (input, output) {
                     if (articleMatch = regexArticle.exec(articleBody)) {
                         real++;
                         console.log(this.href);
-                        contentStr += title + " - " + url + "\n\n";
+                        contentStr += "\n\n" + title + " - " + url;
                         feed.addItem({
                             title: title,
                             id: url,
@@ -79,9 +83,9 @@ app.get('/dysfz', function (input, output) {
                                 'Content-Type': 'application/json'
                             },
                             body: JSON.stringify({
-                                title: 'dysfz',
+                                title: userAgent,
                                 type: 'note',
-                                body: contentStr.slice(0, -2)
+                                body: contentStr//.slice(0, -2)
                             })
                         };
                         var r = request.post(options, function (errorXML, responseXML, bodyXML) {
@@ -91,7 +95,7 @@ app.get('/dysfz', function (input, output) {
                         });
                         //r.form(atom1);
 
-                        output.send(atom1);
+                        res.send(atom1);
                     }
                 });
             })(match);
