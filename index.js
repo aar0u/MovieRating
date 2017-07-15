@@ -2,6 +2,7 @@ var express = require('express');
 var request = require('request');
 var app = express();
 const Feed = require('feed');
+var pushbullet = require('./push');
 
 app.set('port', (process.env.PORT || 5000));
 
@@ -76,24 +77,7 @@ app.get('/dysfz', function (req, res) {
                         var atom1 = feed.atom1();
 
                         //sent to another service
-                        var options = {
-                            url: 'https://api.pushbullet.com/v2/pushes',
-                            headers: {
-                                'Access-Token': 'o.5DKAmyvLxIB5oSrgx5BqXGFmlWdHUaiR',
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                title: userAgent,
-                                type: 'note',
-                                body: contentStr//.slice(0, -2)
-                            })
-                        };
-                        var r = request.post(options, function (errorXML, responseXML, bodyXML) {
-                            console.log('error:', errorXML); // Print the error if one occurred
-                            console.log('statusCode:', responseXML && responseXML.statusCode); // Print the response status code if a response was received
-                            console.log('body:', bodyXML);
-                        });
-                        //r.form(atom1);
+                        pushbullet(userAgent, contentStr); //.slice(0, -2)
 
                         res.send(atom1);
                     }
