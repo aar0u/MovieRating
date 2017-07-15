@@ -13,9 +13,11 @@ module.exports = function (title, content) {
             body: content
         })
     };
-    var r = request.post(options, function (errorXML, responseXML, bodyXML) {
-        console.log('error:', errorXML); // Print the error if one occurred
-        console.log('statusCode:', responseXML && responseXML.statusCode); // Print the response status code if a response was received
-        console.log('body:', bodyXML);
+    var r = request.post(options, function (error, response, body) {
+        if (error || (response && response.statusCode != 200)) {
+            console.log('error:', error); // Print the error if one occurred
+            console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+        }
+        console.log('body:', body);
     });
 }
