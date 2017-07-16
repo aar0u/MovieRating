@@ -6,8 +6,17 @@ pg.defaults.ssl = true;
 
 var regexList = /<option value=".+?">\s+([\s\S]+?)\s+<\/option>/g;
 
-module.exports = function (app) {
-    app.get('/shaw', function (req, res) {
+module.exports = {
+    service: function (app) {
+        app.get('/shaw', function (req, res) {
+            module.exports.getScore();
+            res.send("ok");
+        });
+
+        //other routes..
+    },
+
+    getScore: function () {
         request('http://shaw.sg/sw_movie.aspx', function (error, response, body) {
             body = /<select name="FilmCode"[\s\S]+?<\/select>/g.exec(body)[0];
 
@@ -73,9 +82,6 @@ module.exports = function (app) {
             // while (match = regexList.exec(body)) {
             //     console.log(match[1].replace(/(\s*\[([^>]+)])/ig, ''));
             // }
-            res.send("ok");
         });
-    });
-
-    //other routes..
+    }
 };
