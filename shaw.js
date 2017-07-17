@@ -20,11 +20,18 @@ module.exports = {
         request('http://shaw.sg/sw_movie.aspx', function (error, response, body) {
             body = /<select name="FilmCode"[\s\S]+?<\/select>/g.exec(body)[0];
 
-            // var i = 0;
+            var matches = [];
             while (match = regexList.exec(body)) {
-                // if (i > 0) break;
-                // i++;
-                var nameMatch = match[1].replace(/(\s*\[([^>]+)])/ig, '');
+                matches.push(match[1].replace(/(\s*\[([^>]+)])/ig, ''));
+            }
+
+            //only unique
+            var nameMatches = matches.filter(function (value, index, self) {
+                return self.indexOf(value) === index;
+            });
+
+            for (var i = 0; i < nameMatches.length; i++) {
+                var nameMatch = nameMatches[i];
                 (function (name) {
                     request('http://api.douban.com/v2/movie/search?q=' + name, function (errorDouban, responseDouban, bodyDouban) {
                         if (errorDouban || (responseDouban && responseDouban.statusCode != 200)) {
@@ -44,11 +51,8 @@ module.exports = {
                         // console.log(params.join('\n'));
                         // return;
 
-                        var client = new pg.Client({
-                            connectionString: process.env.DATABASE_URL,
-                        });
-                        client.connect();
-                        client.query('UPDATE shaw SET cnname=$2, score=$3, url=$4 WHERE name=$1 and score!=$3', params, function (err, res) {
+                        var pool = require('./pgpool');
+                        pool.query('UPDATE shaw SET cnname=$2, score=$3, url=$4 WHERE name=$1 and score!=$3', params, function (err, res) {
                             if (err) {
                                 console.error(err);
                             }
@@ -56,11 +60,10 @@ module.exports = {
                                 if (res.rowCount == 1) {
                                     console.log("update " + params);
                                     pushbullet("Shaw", params.join('\n'));
-                                    client.end();
                                 }
                                 else if (res.rowCount == 0) {
                                     var sqlInsert = 'INSERT INTO shaw(name, cnname, score, url) SELECT $1,$2,$3,$4 WHERE NOT EXISTS (SELECT 1 FROM shaw WHERE name=$1);';
-                                    client.query(sqlInsert, params, function (errInsert, resInsert) {
+                                    pool.query(sqlInsert, params, function (errInsert, resInsert) {
                                         if (errInsert) {
                                             console.error(errInsert);
                                         }
@@ -70,7 +73,6 @@ module.exports = {
                                         } else {
                                             console.log("no update " + params);
                                         }
-                                        client.end();
                                     });
                                 }
                             }
@@ -78,10 +80,6 @@ module.exports = {
                     });
                 })(nameMatch);
             }
-
-            // while (match = regexList.exec(body)) {
-            //     console.log(match[1].replace(/(\s*\[([^>]+)])/ig, ''));
-            // }
         });
     }
 };
