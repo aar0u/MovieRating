@@ -1,7 +1,7 @@
 var request = require('request');
 var feed = require('feed');
+var db = require('./dbpg');
 var pushbullet = require('./push');
-var pool = require('./pgpool');
 
 module.exports = dysfz;
 
@@ -33,13 +33,10 @@ function dysfz(req) {
                 }
                 console.log(url);
                 count++;
-                pool.query('SELECT 1 FROM movies WHERE url=$1', [url], function (err, res) {
-                    if (err) {
-                        console.log(err.stack);
-                    } else if (res.rowCount == 0) {
+                db.exists(url, function (exists) {
+                    if (!exists) {
                         request(url, function (articleError, articleResponse, articleBody) {
                             console.log('get content ' + url);
-
                             if (error) {
                                 return console.error('failed:', error);
                             }
@@ -47,16 +44,10 @@ function dysfz(req) {
                             if (articleMatch = regexArticle.exec(articleBody)) {
                                 console.log(this.href);
                                 var content = articleMatch[1];
-
-                                pool.query('INSERT INTO movies(url, title, content, updated) SELECT $1, $2, $3, $4 WHERE NOT EXISTS (SELECT 1 FROM movies WHERE url=$1);',
-                                    [url, title, content, articleDate], function (err, res) {
-                                        if (err) {
-                                            console.log(err.stack);
-                                        } else if (res.rowCount > 0) {
-                                            console.log("rowCount " + res.rowCount);
-                                            pushbullet(userAgent, title + " - " + url);
-                                        }
-                                    });
+                                db.movieNew([url, title, content, articleDate], function (rowCount) {
+                                    console.log("rowCount " + rowCount);
+                                    pushbullet(userAgent, title + " - " + url);
+                                });
                             }
                         });
                     }
@@ -75,34 +66,30 @@ function dysfz(req) {
 }
 
 dysfz.feed = function (req, res) {
-    pool.query('SELECT * FROM movies ORDER BY updated DESC LIMIT 15;', function (err, result) {
-        if (err) {
-            console.log(err.stack);
-        } else {
-            var userAgent = req.headers['user-agent'];
-            var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    db.list(function (rows) {
+        var userAgent = req.headers['user-agent'];
+        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
-            console.log(ip + ' ' + userAgent + ' feed');
-            var feedOut = new feed({
-                title: 'dysfz',
-                id: 'dysfz',
-                updated: currentDate,
-                favicon: 'https://qapla.herokuapp.com/favicon.ico'
+        console.log(ip + ' ' + userAgent + ' feed');
+        var feedOut = new feed({
+            title: 'dysfz',
+            id: 'dysfz',
+            updated: currentDate,
+            favicon: 'https://qapla.herokuapp.com/favicon.ico'
+        });
+
+        for (var i = 0; i < rows.length; i++) {
+            var obj = rows[i];
+            feedOut.addItem({
+                title: obj.title,
+                id: obj.url,
+                link: obj.url,
+                content: obj.content,
+                date: obj.updated
             });
-
-            for (var i = 0; i < result.rows.length; i++) {
-                var obj = result.rows[i];
-                feedOut.addItem({
-                    title: obj.title,
-                    id: obj.url,
-                    link: obj.url,
-                    content: obj.content,
-                    date: obj.updated
-                });
-            }
-
-            var atom1 = feedOut.atom1();
-            res.send(atom1);
         }
+
+        var atom1 = feedOut.atom1();
+        res.send(atom1);
     });
 };

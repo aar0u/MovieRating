@@ -1,8 +1,6 @@
 var request = require('request');
-var pg = require('pg');
+var db = require('./dbpg');
 var pushbullet = require('./push');
-
-pg.defaults.ssl = true;
 
 var regexList = /<option value=".+?">\s+([\s\S]+?)\s+<\/option>/g;
 
@@ -57,30 +55,20 @@ module.exports = {
                         // console.log(params.join('\n'));
                         // return;
 
-                        var pool = require('./pgpool');
-                        pool.query('UPDATE shaw SET cnname=$2, score=$3, url=$4 WHERE name=$1 and score!=$3', params, function (err, res) {
-                            if (err) {
-                                console.error(err);
+                        db.shawUpdate(params, function (updated) {
+                            if (updated) {
+                                console.log('update ' + params);
+                                pushbullet('Shaw', params.join('\n'));
                             }
                             else {
-                                if (res.rowCount == 1) {
-                                    console.log('update ' + params);
-                                    pushbullet('Shaw', params.join('\n'));
-                                }
-                                else if (res.rowCount == 0) {
-                                    var sqlInsert = 'INSERT INTO shaw(name, cnname, score, url) SELECT $1,$2,$3,$4 WHERE NOT EXISTS (SELECT 1 FROM shaw WHERE name=$1);';
-                                    pool.query(sqlInsert, params, function (errInsert, resInsert) {
-                                        if (errInsert) {
-                                            console.error(errInsert);
-                                        }
-                                        else if (resInsert.rowCount == 1) {
-                                            console.log('insert ' + params);
-                                            pushbullet('Shaw', params.join('\n'));
-                                        } else {
-                                            console.log('no update ' + params);
-                                        }
-                                    });
-                                }
+                                db.shawNew(params, function (rowCount) {
+                                    if (rowCount == 1) {
+                                        console.log('new movie ' + params);
+                                        pushbullet('Shaw', params.join('\n'));
+                                    } else {
+                                        console.log('no update ' + params);
+                                    }
+                                });
                             }
                         });
                     });
