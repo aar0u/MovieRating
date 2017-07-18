@@ -38,9 +38,15 @@ module.exports = {
                             console.log('error:', errorDouban);
                             console.log('statusCode:', responseDouban && responseDouban.statusCode);
                         }
-                        var jsonObj = JSON.parse(bodyDouban);
-                        if (typeof jsonObj.subjects == "undefined") {
-                            console.log('body:', bodyDouban);
+                        var jsonObj;
+                        try {
+                            jsonObj = JSON.parse(bodyDouban);
+                        }
+                        catch (e) {
+                            console.error(bodyDouban, e);
+                        }
+                        if (typeof jsonObj.subjects == 'undefined') {
+                            console.log('no subjects:', bodyDouban);
                             return;
                         }
                         var info = jsonObj.subjects.filter(function (subject) {
@@ -58,8 +64,8 @@ module.exports = {
                             }
                             else {
                                 if (res.rowCount == 1) {
-                                    console.log("update " + params);
-                                    pushbullet("Shaw", params.join('\n'));
+                                    console.log('update ' + params);
+                                    pushbullet('Shaw', params.join('\n'));
                                 }
                                 else if (res.rowCount == 0) {
                                     var sqlInsert = 'INSERT INTO shaw(name, cnname, score, url) SELECT $1,$2,$3,$4 WHERE NOT EXISTS (SELECT 1 FROM shaw WHERE name=$1);';
@@ -68,10 +74,10 @@ module.exports = {
                                             console.error(errInsert);
                                         }
                                         else if (resInsert.rowCount == 1) {
-                                            console.log("insert " + params);
-                                            pushbullet("Shaw", params.join('\n'));
+                                            console.log('insert ' + params);
+                                            pushbullet('Shaw', params.join('\n'));
                                         } else {
-                                            console.log("no update " + params);
+                                            console.log('no update ' + params);
                                         }
                                     });
                                 }
