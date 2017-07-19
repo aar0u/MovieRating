@@ -32,7 +32,7 @@ module.exports = {
                 var nameMatch = nameMatches[i];
                 (function (name) {
                     request('http://api.douban.com/v2/movie/search?q=' + name, function (errorDouban, responseDouban, bodyDouban) {
-                        if (errorDouban || (responseDouban && responseDouban.statusCode != 200)) {
+                        if (errorDouban || (responseDouban && responseDouban.statusCode !== 200)) {
                             console.log('error:', errorDouban);
                             console.log('statusCode:', responseDouban && responseDouban.statusCode);
                         }
@@ -43,7 +43,7 @@ module.exports = {
                         catch (e) {
                             console.error(bodyDouban, e);
                         }
-                        if (typeof jsonObj.subjects == 'undefined') {
+                        if (typeof jsonObj.subjects === 'undefined') {
                             console.log('no subjects:', bodyDouban);
                             return;
                         }
@@ -62,7 +62,7 @@ module.exports = {
                             }
                             else {
                                 db.shawNew(params, function (rowCount) {
-                                    if (rowCount == 1) {
+                                    if (rowCount === 1) {
                                         console.log('new movie ' + params);
                                         pushbullet('Shaw', params.join('\n'));
                                     } else {

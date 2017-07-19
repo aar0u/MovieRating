@@ -8,14 +8,14 @@ var pool = new pg.Pool({
 });
 
 function db() {
-};
+}
 
 db.exists = function (url, callback) {
     pool.query('SELECT 1 FROM movies WHERE url=$1', [url], function (err, res) {
         if (err) {
             console.log(err.stack);
         } else {
-            callback(res.rowCount != 0);
+            callback(res.rowCount !== 0);
         }
     });
 };
@@ -47,7 +47,7 @@ db.shawUpdate = function (params, callback) {
             console.log(err.stack);
         }
         else {
-            callback(res.rowCount != 0);
+            callback(res.rowCount !== 0);
         }
     });
 };
@@ -61,4 +61,4 @@ db.shawNew = function (params, callback) {
             callback(res.rowCount);
         }
     });
-}
+};

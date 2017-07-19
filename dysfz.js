@@ -8,6 +8,7 @@ module.exports = dysfz;
 var regex = /<h2><a target="_blank" href="(.+?)">(.+?)<\/a><\/h2>[\s\S]+?"des clearfix">([\s\S]+?)\s*<a class="pic fl"[\s\S]+?更新: <span>(.+?)<\/span>/g;
 var regexArticle = /<div class="detail"[\s\S]+?<\/div>([\s\S]+)<div class="bdsharebuttonbox/g;
 
+db();
 var currentDate = new Date();
 
 function dysfz(req) {
@@ -15,7 +16,7 @@ function dysfz(req) {
         var userAgent = req.headers['user-agent'];
         var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
-        if (error || (response && response.statusCode != 200)) {
+        if (error || (response && response.statusCode !== 200)) {
             console.log('error:', error);
             console.log('statusCode:', response && response.statusCode);
             console.log('body:', body);
@@ -52,7 +53,7 @@ function dysfz(req) {
                         });
                     }
                     countProceed++;
-                    if (countProceed == countTotal) {
+                    if (countProceed === countTotal) {
                         console.log("countTotal " + countTotal);
 
                         //sent to another service
@@ -85,7 +86,7 @@ dysfz.feed = function (req, res) {
                 id: obj.url,
                 link: obj.url,
                 content: obj.content,
-                date: obj.updated
+                date: new Date(obj.updated)
             });
         }
 
