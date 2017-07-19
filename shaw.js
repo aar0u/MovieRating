@@ -15,6 +15,7 @@ module.exports = {
     },
 
     getScore: function () {
+        var currentDate = new Date();
         request('http://shaw.sg/sw_movie.aspx', function (error, response, body) {
             body = /<select name="FilmCode"[\s\S]+?<\/select>/g.exec(body)[0];
 
@@ -48,10 +49,10 @@ module.exports = {
                             return;
                         }
                         var info = jsonObj.subjects.filter(function (subject) {
-                            return subject.year >= new Date().getFullYear() - 1  //filter out older than last year
+                            return subject.year >= currentDate.getFullYear() - 1  //filter out older than last year
                         })[0];
 
-                        var params = [name, info.title, info.rating.average, info.alt];
+                        var params = [name, info.title, info.rating.average, info.alt, currentDate];
                         // console.log(params.join('\n'));
                         // return;
 
