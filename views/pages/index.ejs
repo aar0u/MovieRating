@@ -9,7 +9,7 @@
     <thead>
     <tr>
         <th>name</th>
-        <th>名称</th>
+        <th>douban score</th>
         <th>updated time</th>
     </tr>
     </thead>
@@ -17,7 +17,7 @@
     <% rows.forEach(function(row){ %>
     <tr>
         <td><%= row.name %></td>
-        <td><a href="<%= row.url %>"><%= row.name_cn %></a></td>
+        <td><a href="<%= row.url %>"><%= row.name_cn %> [ <%= row.score %> ]</a></td>
         <td><%= row.updated %></td>
     </tr>
     <% }); %>
