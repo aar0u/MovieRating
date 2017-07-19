@@ -13,7 +13,6 @@ module.exports = {
 
         //other routes..
     },
-
     getScore: function () {
         var currentDate = new Date();
         request('http://shaw.sg/sw_movie.aspx', function (error, response, body) {
@@ -76,5 +75,8 @@ module.exports = {
                 })(nameMatch);
             }
         });
+    },
+    feed: function(callback){
+        db.shawList(callback);
     }
 };

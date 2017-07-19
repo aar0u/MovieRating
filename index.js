@@ -10,10 +10,10 @@ app.use(express.static(__dirname + '/public'));
 app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
-shaw.service(app);
-
 app.get('/', function (req, res) {
-    res.render('pages/index');
+    shaw.feed(function (rows) {
+        res.render('pages/index', {rows: rows});
+    });
 });
 
 app.get('/get_dysfz', function (req, res) {
@@ -30,6 +30,9 @@ app.get('/dysfz', function (req, res) {
     //atom feed
     dysfz.feed(req, res);
 });
+
+//routes from separated file
+shaw.service(app);
 
 app.listen(app.get('port'), function () {
     console.log('Node app is running on port', app.get('port'));
