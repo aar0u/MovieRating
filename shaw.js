@@ -2,7 +2,7 @@ var request = require('request');
 var db = require('./dbpg');
 var pushbullet = require('./push');
 
-var regexList = /<option value=".+?">\s+([\s\S]+?)\s+<\/option>/g;
+var regexList = /<option value="(.+?)">\s+([\s\S]+?)\s+<\/option>/g;
 
 module.exports = {
     service: function (app) {
@@ -18,18 +18,17 @@ module.exports = {
         request('http://shaw.sg/sw_movie.aspx', function (error, response, body) {
             body = /<select name="FilmCode"[\s\S]+?<\/select>/g.exec(body)[0];
 
-            var matches = [];
+            var matches = {};
             while (match = regexList.exec(body)) {
-                matches.push(match[1].replace(/(\s*\[([^>]+)])/ig, ''));
+                matches[match[2].replace(/(\s*\[([^>]+)])/ig, '')] = match[1];
             }
 
-            //only unique
-            var nameMatches = matches.filter(function (value, index, self) {
-                return self.indexOf(value) === index;
-            });
+            // only unique
+            // var nameMatches = array.filter(function (value, index, self) {
+            //     return self.indexOf(value) === index;
+            // });
 
-            for (var i = 0; i < nameMatches.length; i++) {
-                var nameMatch = nameMatches[i];
+            for (var key in matches) {
                 (function (name) {
                     request('http://api.douban.com/v2/movie/search?q=' + name, function (errorDouban, responseDouban, bodyDouban) {
                         if (errorDouban || (responseDouban && responseDouban.statusCode !== 200)) {
@@ -42,6 +41,7 @@ module.exports = {
                         }
                         catch (e) {
                             console.error(bodyDouban, e);
+                            return;
                         }
                         if (typeof jsonObj.subjects === 'undefined') {
                             console.log('no subjects:', bodyDouban);
@@ -51,7 +51,7 @@ module.exports = {
                             return subject.year >= currentDate.getFullYear() - 1  //filter out older than last year
                         })[0];
 
-                        var params = [name, info.title, info.rating.average, info.alt, currentDate];
+                        var params = [name, info.title, info.rating.average, info.alt, currentDate, matches[name]];
                         // console.log(params.join('\n'));
                         // return;
 
@@ -72,11 +72,11 @@ module.exports = {
                             }
                         });
                     });
-                })(nameMatch);
+                })(key);
             }
         });
     },
-    feed: function(callback){
+    feed: function (callback) {
         db.shawList(callback);
     }
 };

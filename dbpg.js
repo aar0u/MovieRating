@@ -42,7 +42,7 @@ db.list = function (callback) {
 };
 
 db.shawUpdate = function (params, callback) {
-    pool.query('UPDATE shaw SET name_cn=$2, score=$3, url=$4, updated=$5 WHERE name=$1 and score!=$3', params, function (err, res) {
+    pool.query('UPDATE shaw SET name_cn=$2, score=$3, url=$4, updated=$5, code=$6 WHERE name=$1 and score!=$3', params, function (err, res) {
         if (err) {
             console.log(err.stack);
         }
@@ -53,7 +53,7 @@ db.shawUpdate = function (params, callback) {
 };
 
 db.shawNew = function (params, callback) {
-    var sqlInsert = 'INSERT INTO shaw(name, name_cn, score, url, updated) SELECT $1,$2,$3,$4,$5 WHERE NOT EXISTS (SELECT 1 FROM shaw WHERE name=$1);';
+    var sqlInsert = 'INSERT INTO shaw(name, name_cn, score, url, updated, code) SELECT $1,$2,$3,$4,$5,$6 WHERE NOT EXISTS (SELECT 1 FROM shaw WHERE name=$1);';
     pool.query(sqlInsert, params, function (err, res) {
         if (err) {
             console.log(err.stack);

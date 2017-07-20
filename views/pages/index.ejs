@@ -16,7 +16,7 @@
     <tbody>
     <% rows.forEach(function(row){ %>
     <tr>
-        <td><%= row.name %></td>
+        <td><a href="http://shaw.sg/sw_moviedetails.aspx?filmCode=<%= row.code %>"><%= row.name %></a></td>
         <% var color;
             if (row.score >= 7)
                 color = 'rgb(28, 184, 65)';
