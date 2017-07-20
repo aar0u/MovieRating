@@ -64,7 +64,7 @@ module.exports = {
                                 db.shawNew(params, function (rowCount) {
                                     if (rowCount === 1) {
                                         console.log('new movie ' + params);
-                                        pushbullet('Shaw', params.join('\n'));
+                                        pushbullet('Shaw', params.slice(0, -1).join('\n') + '\nhttps://qapla.herokuapp.com');
                                     } else {
                                         console.log('no update ' + params);
                                     }
