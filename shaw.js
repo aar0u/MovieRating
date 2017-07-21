@@ -56,15 +56,16 @@ module.exports = {
                         // return;
 
                         db.shawUpdate(params, function (updated) {
+                        	var pushMsg = params.slice(0, -1).join('\n') + '\nhttps://qapla.herokuapp.com';
                             if (updated) {
                                 console.log('update ' + params);
-                                pushbullet('Shaw', params.join('\n'));
+                                pushbullet('Shaw', pushMsg);
                             }
                             else {
                                 db.shawNew(params, function (rowCount) {
                                     if (rowCount === 1) {
                                         console.log('new movie ' + params);
-                                        pushbullet('Shaw', params.slice(0, -1).join('\n') + '\nhttps://qapla.herokuapp.com');
+                                        pushbullet('Shaw', pushMsg);
                                     } else {
                                         console.log('no update ' + params);
                                     }
