@@ -24,7 +24,7 @@ app.get('/get_dysfz', function (req, res) {
     //atom feed
     dysfz.feed(req, res);
 
-    //setTimeout(shaw.getScore, 1000);
+    setTimeout(shaw.getScore, 1000);
 });
 
 app.get('/dysfz', function (req, res) {
