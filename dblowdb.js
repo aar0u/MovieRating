@@ -39,3 +39,36 @@ db.shawUpdate = function (params, callback) {
 db.shawNew = function (params, callback) {
 
 };
+
+db.notiNew = function (content) {
+    var dbNoti = getDbNoti();
+    var now = getTime();
+    dbNoti.get('notis').push({[now]: content}).write();
+};
+
+db.noti = function () {
+    var dbNoti = getDbNoti();
+    var list = dbNoti.get('notis').value();
+    return list.map(function (x) {
+        var key = Object.keys(x)[0];
+        return key + ":\n" + x[key];
+    }).join("\n\n");
+};
+
+function getDbNoti() {
+    var currentDate = getTime().slice(0, 10);
+    var dbNoti = low('lowdb/' + currentDate + '.json');
+    dbNoti.defaults({notis: []}).write();
+    return dbNoti;
+};
+
+function getTime() {
+    return new Date().toLocaleString('en-US', {
+        timeZone: 'Asia/Singapore',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: "2-digit",
+        minute: "2-digit"
+    }).replace(/\//g, '-');
+}

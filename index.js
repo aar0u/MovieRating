@@ -1,6 +1,7 @@
 var express = require('express');
 var shaw = require('./shaw');
 var dysfz = require('./dysfz');
+var db = require('./dblowdb');
 
 var app = express();
 
@@ -23,12 +24,17 @@ app.get('/get_dysfz', function (req, res) {
     //atom feed
     dysfz.feed(req, res);
 
-    setTimeout(shaw.getScore, 1000);
+    //setTimeout(shaw.getScore, 1000);
 });
 
 app.get('/dysfz', function (req, res) {
     //atom feed
     dysfz.feed(req, res);
+});
+
+app.get('/noti', function (req, res) {
+    res.type('text');
+    res.send(db.noti());
 });
 
 //routes from separated file
