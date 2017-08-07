@@ -5,10 +5,10 @@ var db = require('./dbpg');
 module.exports = function (title, newNoti) {
     db.notiLast(function (row) {
         var content;
-        var dateStr = time.new();
-        var newContent = dateStr + ":\n" + newNoti;
+        var now = new Date();
+        var newContent = time.local() + ":\n" + newNoti;
         if (row) {
-            var diffHours = (new Date(dateStr) - row.date_added) / 3600000;
+            var diffHours = (now - row.date_added) / 3600000;
             content = row.content + "\n\n" + newContent;
             db.notiUpdate(row.date_added, content);
             console.log("diffHours: " + diffHours + ", out: " + content);
@@ -17,7 +17,7 @@ module.exports = function (title, newNoti) {
             }
         }
         else {
-            db.notiNew(dateStr, newContent);
+            db.notiNew(now, newContent);
         }
     });
 };

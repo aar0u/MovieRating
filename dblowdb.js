@@ -1,7 +1,6 @@
 var low = require('lowdb');
 var dbMovie = low('lowdb/movie.json');
 var dbShaw = low('lowdb/shaw.json');
-var time = require('./util/time');
 
 module.exports = db;
 
@@ -43,7 +42,7 @@ db.shawNew = function (params, callback) {
 
 db.notiNew = function (content) {
     var dbNoti = getDbNoti();
-    var now = time.new();
+    var now = new Date();
     dbNoti.get('notis').push({[now]: content}).write();
 };
 

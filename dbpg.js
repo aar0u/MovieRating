@@ -1,5 +1,4 @@
 var pg = require('pg');
-var time = require('./util/time');
 
 module.exports = db;
 

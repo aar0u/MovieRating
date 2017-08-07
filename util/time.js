@@ -1,4 +1,4 @@
-exports.new = function (dateStr) {
+exports.local = function (dateStr) {
     var date;
     if (dateStr) {
         date = new Date(dateStr);

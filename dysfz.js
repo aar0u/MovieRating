@@ -2,7 +2,6 @@ var request = require('request');
 var feed = require('feed');
 var db = require('./dbpg');
 var pushbullet = require('./push');
-var time = require('./util/time');
 
 module.exports = dysfz;
 
@@ -10,7 +9,7 @@ var regex = /<h2><a target="_blank" href="(.+?)">(.+?)<\/a><\/h2>[\s\S]+?"des cl
 var regexArticle = /<div class="detail"[\s\S]+?<\/div>([\s\S]+)<div class="bdsharebuttonbox/g;
 
 db();
-var currentDate = new Date(time.new());
+var currentDate = new Date();
 
 function dysfz(req) {
     request('http://www.dysfz.cc', function (error, response, body) {

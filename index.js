@@ -1,7 +1,6 @@
 var express = require('express');
 var shaw = require('./shaw');
 var dysfz = require('./dysfz');
-var time = require('./util/time');
 var db = require('./dbpg');
 
 var app = express();
@@ -38,11 +37,14 @@ app.get('/noti', function (req, res) {
 
     db.notiList(function (notis) {
         var text;
+        var now = new Date();
+        text = 'now ' + now + '\n';
         if (notis[0]) {
-            var diffHours = (new Date(time.new()) - notis[0].date_added) / 3600000;
-            text = "diff" + diffHours + "\n" + notis;
+            var diffHours = (now - notis[0].date_added) / 3600000;
+            text += 'lastdate ' + notis[0].date_added +
+                "\ndiff " + diffHours + "\n" + JSON.stringify(notis);
         } else {
-            text = notis;
+            text += JSON.stringify(notis);
         }
         res.send(text);
     });
