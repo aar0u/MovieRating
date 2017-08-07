@@ -56,10 +56,6 @@ db.noti = function (time) {
     }).join("\n\n");
 };
 
-db.sendTime = function (time) {
-    var dbNoti = getDbNoti();
-};
-
 function getDbNoti(time) {
     var date = time.slice(0, 10);
     var dbNoti = low('lowdb/' + date + '.json');

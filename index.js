@@ -1,8 +1,8 @@
 var express = require('express');
 var shaw = require('./shaw');
 var dysfz = require('./dysfz');
-var db = require('./dblowdb');
 var time = require('./util/time');
+var db = require('./dbpg');
 
 var app = express();
 
@@ -35,12 +35,10 @@ app.get('/dysfz', function (req, res) {
 
 app.get('/noti', function (req, res) {
     res.type('text');
-    if (req.query.date) {
-        res.send(db.noti(time.new(req.query.date)));
-    }
-    else {
-        res.send(db.noti(time.new()));
-    }
+
+    db.notiList(function (noti) {
+        res.send(noti);
+    });
 });
 
 //routes from separated file

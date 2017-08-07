@@ -1,4 +1,5 @@
 var pg = require('pg');
+var time = require('./util/time');
 
 module.exports = db;
 
@@ -69,6 +70,46 @@ db.shawList = function (callback) {
             console.log(err.stack);
         } else {
             callback(result.rows);
+        }
+    });
+};
+
+db.notiList = function (callback) {
+    pool.query('SELECT * FROM notification ORDER BY date_added', function (err, result) {
+        if (err) {
+            console.log(err.stack);
+        } else if (typeof callback === "function") {
+            callback(result.rows);
+        }
+    });
+};
+
+db.notiLast = function (callback) {
+    pool.query('SELECT * FROM notification ORDER BY date_added DESC LIMIT 1;', function (err, result) {
+        if (err) {
+            console.log(err.stack);
+        } else {
+            callback(result.rows[0]);
+        }
+    });
+};
+
+db.notiNew = function (date, content, callback) {
+    pool.query('INSERT INTO notification VALUES ($1, $2);', [date, content], function (err, result) {
+        if (err) {
+            console.log(err.stack);
+        } else if (typeof callback === "function") {
+            callback(result.rowCount);
+        }
+    });
+};
+
+db.notiUpdate = function (date_added, content, callback) {
+    pool.query('UPDATE notification SET content = $2 WHERE date_added = $1;', [date_added, content], function (err, result) {
+        if (err) {
+            console.log(err.stack);
+        } else if (typeof callback === "function") {
+            callback(result.rowCount);
         }
     });
 };
