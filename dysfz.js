@@ -10,7 +10,7 @@ var regex = /<h2><a target="_blank" href="(.+?)">(.+?)<\/a><\/h2>[\s\S]+?"des cl
 var regexArticle = /<div class="detail"[\s\S]+?<\/div>([\s\S]+)<div class="bdsharebuttonbox/g;
 
 db();
-var currentDate = time.new();
+var currentDate = new Date(time.new());
 
 function dysfz(req) {
     request('http://www.dysfz.cc', function (error, response, body) {
