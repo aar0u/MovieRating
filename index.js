@@ -36,8 +36,15 @@ app.get('/dysfz', function (req, res) {
 app.get('/noti', function (req, res) {
     res.type('text');
 
-    db.notiList(function (noti) {
-        res.send(noti);
+    db.notiList(function (notis) {
+        var text;
+        if (notis[0]) {
+            var diffHours = (new Date(time.new()) - notis[0].date_added) / 3600000;
+            text = "diff" + diffHours + "\n" + notis;
+        } else {
+            text = notis;
+        }
+        res.send(text);
     });
 });
 

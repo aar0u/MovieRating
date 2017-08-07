@@ -75,7 +75,7 @@ db.shawList = function (callback) {
 };
 
 db.notiList = function (callback) {
-    pool.query('SELECT * FROM notification ORDER BY date_added', function (err, result) {
+    pool.query('SELECT * FROM notification ORDER BY date_added DESC', function (err, result) {
         if (err) {
             console.log(err.stack);
         } else if (typeof callback === "function") {
