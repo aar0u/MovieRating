@@ -1,6 +1,7 @@
 var low = require('lowdb');
 var dbMovie = low('lowdb/movie.json');
 var dbShaw = low('lowdb/shaw.json');
+var time = require('./util/time');
 
 module.exports = db;
 
@@ -42,12 +43,12 @@ db.shawNew = function (params, callback) {
 
 db.notiNew = function (content) {
     var dbNoti = getDbNoti();
-    var now = getTime();
+    var now = time.new();
     dbNoti.get('notis').push({[now]: content}).write();
 };
 
-db.noti = function () {
-    var dbNoti = getDbNoti();
+db.noti = function (time) {
+    var dbNoti = getDbNoti(time);
     var list = dbNoti.get('notis').value();
     return list.map(function (x) {
         var key = Object.keys(x)[0];
@@ -55,20 +56,14 @@ db.noti = function () {
     }).join("\n\n");
 };
 
-function getDbNoti() {
-    var currentDate = getTime().slice(0, 10);
-    var dbNoti = low('lowdb/' + currentDate + '.json');
-    dbNoti.defaults({notis: []}).write();
-    return dbNoti;
+db.sendTime = function (time) {
+    var dbNoti = getDbNoti();
 };
 
-function getTime() {
-    return new Date().toLocaleString('en-US', {
-        timeZone: 'Asia/Singapore',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: "2-digit",
-        minute: "2-digit"
-    }).replace(/\//g, '-');
-}
+function getDbNoti(time) {
+    var date = time.slice(0, 10);
+    var dbNoti = low('lowdb/' + date + '.json');
+    dbNoti.defaults({notis: []}).write();
+    dbNoti.defaults({sendTime: []}).write();
+    return dbNoti;
+};

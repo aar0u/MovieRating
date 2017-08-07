@@ -1,12 +1,15 @@
 var request = require('request');
 var db = require('./dblowdb');
+var time = require('./util/time');
 
 module.exports = function (title, content) {
     db.notiNew(content);
 
-    var hour = new Date().getHours();
+    var hour = time.new().getHours();
     if (hour < 20)
         return;
+
+    db.sendTime(time.new());
 
     var options = {
         url: 'https://api.pushbullet.com/v2/pushes',

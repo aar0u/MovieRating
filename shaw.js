@@ -1,6 +1,7 @@
 var request = require('request');
 var db = require('./dbpg');
 var pushbullet = require('./push');
+var time = require('./util/time');
 
 var regexList = /<option value="(.+?)">\s+([\s\S]+?)\s+<\/option>/g;
 
@@ -14,7 +15,7 @@ module.exports = {
         //other routes..
     },
     getScore: function () {
-        var currentDate = new Date();
+        var currentDate = time.new();
         request('http://shaw.sg/sw_movie.aspx', function (error, response, body) {
             body = /<select name="FilmCode"[\s\S]+?<\/select>/g.exec(body)[0];
 
