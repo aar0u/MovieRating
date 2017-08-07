@@ -15,7 +15,7 @@ module.exports = {
         //other routes..
     },
     getScore: function () {
-        var currentDate = time.new();
+        var currentDate = new Date(time.new());
         request('http://shaw.sg/sw_movie.aspx', function (error, response, body) {
             body = /<select name="FilmCode"[\s\S]+?<\/select>/g.exec(body)[0];
 
