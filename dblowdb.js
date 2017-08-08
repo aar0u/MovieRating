@@ -51,8 +51,8 @@ db.noti = function (time) {
     var list = dbNoti.get('notis').value();
     return list.map(function (x) {
         var key = Object.keys(x)[0];
-        return key + ":\n" + x[key];
-    }).join("\n\n");
+        return key + ':\n' + x[key];
+    }).join('\n\n');
 };
 
 function getDbNoti(time) {

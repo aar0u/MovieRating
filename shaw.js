@@ -8,7 +8,7 @@ module.exports = {
     service: function (app) {
         app.get('/shaw', function (req, res) {
             module.exports.getScore();
-            res.send("ok");
+            res.send('ok');
         });
 
         //other routes..

@@ -46,15 +46,15 @@ function dysfz(req) {
                                 console.log(this.href);
                                 var content = articleMatch[1];
                                 db.movieNew([url, title, content, articleDate], function (rowCount) {
-                                    console.log("rowCount " + rowCount);
-                                    pushbullet(userAgent, title + " - " + url);
+                                    console.log('rowCount ' + rowCount);
+                                    pushbullet(userAgent, title + ' - ' + url);
                                 });
                             }
                         });
                     }
                     countProceed++;
                     if (countProceed === countTotal) {
-                        console.log("countTotal " + countTotal);
+                        console.log('countTotal ' + countTotal);
 
                         //sent to another service
                         pushbullet(userAgent, ip + ' ' + userAgent); //.slice(0, -2)

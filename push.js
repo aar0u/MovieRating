@@ -16,13 +16,13 @@ module.exports = function (title, newNoti) {
 
             var content = array.map(function (x) {
                 var key = Object.keys(x)[0];
-                return key + ":\n" + x[key];
-            }).join("\n\n");
+                return key + ':\n' + x[key];
+            }).join('\n\n');
 
-            console.log("diffHours: " + diffHours + ", out: \n" + content);
+            console.log('diffHours: ' + diffHours + ', out: \n' + content);
             if (diffHours > 4) {
                 push(title, content);
-                db.notiNew(now, []);
+                db.notiNew(now, '[]');
             }
         }
         else {
