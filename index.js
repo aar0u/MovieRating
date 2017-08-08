@@ -42,9 +42,9 @@ app.get('/noti', function (req, res) {
         if (notis[0]) {
             var diffHours = (now - notis[0].date_added) / 3600000;
             text += 'lastdate ' + notis[0].date_added +
-                "\ndiff " + diffHours + "\n" + JSON.stringify(notis);
+                "\ndiff " + diffHours + "\n" + JSON.stringify(notis, null, 4);
         } else {
-            text += JSON.stringify(notis);
+            text += JSON.stringify(notis, null, 4);
         }
         res.send(text);
     });
