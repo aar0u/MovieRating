@@ -1,6 +1,6 @@
 var request = require('request');
 var db = require('./dbpg');
-var pushbullet = require('./push');
+var push = require('./push');
 
 var regexList = /<option value="(.+?)">\s+([\s\S]+?)\s+<\/option>/g;
 
@@ -59,13 +59,13 @@ module.exports = {
                         	var pushMsg = params.slice(0, -1).join('\n') + '\nhttps://qapla.herokuapp.com';
                             if (updated) {
                                 console.log('update ' + params);
-                                pushbullet('Shaw', pushMsg);
+                                push(pushMsg);
                             }
                             else {
                                 db.shawNew(params, function (rowCount) {
                                     if (rowCount === 1) {
                                         console.log('new movie ' + params);
-                                        pushbullet('Shaw', pushMsg);
+                                        push(pushMsg);
                                     } else {
                                         console.log('no update ' + params);
                                     }

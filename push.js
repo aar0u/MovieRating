@@ -2,7 +2,7 @@ var request = require('request');
 var time = require('./util/time');
 var db = require('./dbpg');
 
-module.exports = function (title, newNoti) {
+module.exports = function (newNoti) {
     db.notiLast(function (row) {
         var now = new Date();
         var newContent = {[time.local()]: newNoti};
@@ -21,7 +21,7 @@ module.exports = function (title, newNoti) {
 
             console.log('diffHours: ' + diffHours + ', out: \n' + content);
             if (diffHours > 4) {
-                push(title, content);
+                pushBullet('qapla', content);
                 db.notiNew(now, '[]');
             }
         }
@@ -33,7 +33,7 @@ module.exports = function (title, newNoti) {
 };
 
 
-function push(title, content) {
+function pushBullet(title, content) {
     var options = {
         url: 'https://api.pushbullet.com/v2/pushes',
         headers: {
