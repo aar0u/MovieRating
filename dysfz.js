@@ -47,7 +47,7 @@ function dysfz(req) {
                                 var content = articleMatch[1];
                                 db.movieNew([url, title, content, articleDate], function (rowCount) {
                                     console.log('rowCount ' + rowCount);
-                                    push(title + ' - ' + url);
+                                    push(title + '\n' + url);
                                 });
                             }
                         });

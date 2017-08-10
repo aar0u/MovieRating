@@ -56,7 +56,7 @@ module.exports = {
                         // return;
 
                         db.shawUpdate(params, function (updated) {
-                        	var pushMsg = params.slice(0, -1).join('\n') + '\nhttps://qapla.herokuapp.com';
+                            var pushMsg = params.slice(0, -2).join('\n');
                             if (updated) {
                                 console.log('update ' + params);
                                 push(pushMsg);
