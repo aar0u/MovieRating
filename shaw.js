@@ -51,11 +51,11 @@ module.exports = {
                             return subject.year >= currentDate.getFullYear() - 1  //filter out older than last year
                         })[0];
 
-                        var params = [name, info.title, info.rating.average, info.alt, currentDate, matches[name]];
+                        var params = [name, info.title, info.rating.average, info.alt, matches[name], currentDate];
                         // console.log(params.join('\n'));
                         // return;
 
-                        db.shawUpdate(params, function (updated) {
+                        db.shawUpdate(params.slice(0, -1), function (updated) {
                             var pushMsg = params.slice(0, -2).join('\n');
                             if (updated) {
                                 console.log('update ' + params);
