@@ -42,7 +42,8 @@ db.list = function (callback) {
 };
 
 db.shawUpdate = function (params, callback) {
-    pool.query('UPDATE shaw SET name_cn=$2, score=$3, url=$4, code=$6 WHERE name=$1 and score!=$3', params, function (err, res) {
+    params.slice(4, 1); //remove time;
+    pool.query('UPDATE shaw SET name_cn=$2, score=$3, url=$4, code=$5 WHERE name=$1 and score!=$3', params, function (err, res) {
         if (err) {
             console.log(err.stack);
         }
