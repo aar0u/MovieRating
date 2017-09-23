@@ -43,13 +43,18 @@ module.exports = {
                             console.error(bodyDouban, e);
                             return;
                         }
-                        if (typeof jsonObj.subjects === 'undefined') {
+                        if (typeof jsonObj.subjects === 'undefined' || jsonObj.subjects.length == 0) {
                             console.log('no subjects:', bodyDouban);
                             return;
                         }
                         var info = jsonObj.subjects.filter(function (subject) {
                             return subject.year >= currentDate.getFullYear() - 1  //filter out older than last year
                         })[0];
+
+                        if (typeof info === 'undefined') {
+                            console.log('no subjects from last year:', name, bodyDouban);
+                            return;
+                        }
 
                         var params = [name, info.title, info.rating.average, info.alt, matches[name], currentDate];
                         // console.log(params.join('\n'));
