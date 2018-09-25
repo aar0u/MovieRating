@@ -11,8 +11,8 @@ var regexArticle = /<div class="detail"[\s\S]+?<\/div>([\s\S]+)<div class="bdsha
 db();
 var currentDate = new Date();
 
-function dysfz(req) {
-    request('http://www.dysfz.cc', function (error, response, body) {
+function dysfz (req) {
+    request('http://www.dysfz.vip', function (error, response, body) {
         var userAgent = req.headers['user-agent'];
         var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
@@ -26,7 +26,7 @@ function dysfz(req) {
         while (match = regex.exec(body)) {
             (function (theMatch) {
                 var url = theMatch[1];
-                //https://stackoverflow.com/questions/1499889/remove-html-tags-in-javascript-with-regex
+                // https://stackoverflow.com/questions/1499889/remove-html-tags-in-javascript-with-regex
                 var title = theMatch[2] + theMatch[3].replace(/(<([^>]+)>)/ig, '');
                 var articleDate = new Date(theMatch[4]);
                 if (articleDate > currentDate) {
@@ -55,8 +55,8 @@ function dysfz(req) {
                     countProceed++;
                     if (countProceed === countTotal) {
                         console.log('countTotal ' + countTotal);
-                        //sent to another service
-                        push(ip + ' ' + userAgent); //.slice(0, -2)
+                        // sent to another service
+                        push(ip + ' ' + userAgent); // .slice(0, -2)
                     }
                 });
             })(match);
@@ -95,10 +95,11 @@ dysfz.feed = function (req, res) {
     });
 };
 
-function getImage(content) {
+function getImage (content) {
     var imageMatch = /<img src="(.+?)".+?\/>/g.exec(content);
     var imgTag = ' ';
-    if (imageMatch)
+    if (imageMatch) {
         imgTag += imageMatch[0];
+    }
     return imgTag;
 }

@@ -11,7 +11,7 @@ module.exports = {
             res.send('ok');
         });
 
-        //other routes..
+        // other routes..
     },
     getScore: function () {
         var currentDate = new Date();
@@ -29,6 +29,9 @@ module.exports = {
             // });
 
             for (var key in matches) {
+                if (!{}.hasOwnProperty.call(matches, key)) {
+                    continue;
+                }
                 (function (name) {
                     request('http://api.douban.com/v2/movie/search?q=' + name, function (errorDouban, responseDouban, bodyDouban) {
                         if (errorDouban || (responseDouban && responseDouban.statusCode !== 200)) {
@@ -38,8 +41,7 @@ module.exports = {
                         var jsonObj;
                         try {
                             jsonObj = JSON.parse(bodyDouban);
-                        }
-                        catch (e) {
+                        } catch (e) {
                             console.error(bodyDouban, e);
                             return;
                         }
@@ -48,7 +50,7 @@ module.exports = {
                             return;
                         }
                         var info = jsonObj.subjects.filter(function (subject) {
-                            return subject.year >= currentDate.getFullYear() - 1  //filter out older than last year
+                            return subject.year >= currentDate.getFullYear() - 1; // filter out older than last year
                         })[0];
 
                         if (typeof info === 'undefined') {
@@ -65,8 +67,7 @@ module.exports = {
                             if (updated) {
                                 console.log('update ' + params);
                                 push(pushMsg);
-                            }
-                            else {
+                            } else {
                                 db.shawNew(params, function (rowCount) {
                                     if (rowCount === 1) {
                                         console.log('new movie ' + params);

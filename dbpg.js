@@ -7,7 +7,7 @@ var pool = new pg.Pool({
     connectionString: process.env.DATABASE_URL
 });
 
-function db() {
+function db () {
 }
 
 db.exists = function (url, callback) {
@@ -26,7 +26,7 @@ db.movieNew = function (params, callback) {
             if (err) {
                 console.log(err.stack);
             } else if (res.rowCount > 0) {
-                callback(res.rowCount)
+                callback(res.rowCount);
             }
         });
 };
@@ -45,8 +45,7 @@ db.shawUpdate = function (params, callback) {
     pool.query('UPDATE shaw SET name_cn=$2, score=$3, url=$4, code=$5 WHERE name=$1 and score!=$3', params, function (err, res) {
         if (err) {
             console.log(err.stack);
-        }
-        else {
+        } else {
             callback(res.rowCount !== 0);
         }
     });

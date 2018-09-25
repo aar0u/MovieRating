@@ -18,17 +18,18 @@ app.get('/', function (req, res) {
 });
 
 app.get('/get_dysfz', function (req, res) {
-    //get update
+    // get update
     dysfz(req);
 
-    //atom feed
+    // atom feed
     dysfz.feed(req, res);
 
+    // get shaw
     setTimeout(shaw.getScore, 1000);
 });
 
 app.get('/dysfz', function (req, res) {
-    //atom feed
+    // atom feed
     dysfz.feed(req, res);
 });
 
@@ -50,7 +51,7 @@ app.get('/noti', function (req, res) {
     });
 });
 
-//routes from separated file
+// routes from separated file
 shaw.service(app);
 
 app.listen(app.get('port'), function () {

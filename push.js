@@ -3,9 +3,11 @@ var time = require('./util/time');
 var db = require('./dbpg');
 
 module.exports = function (newNoti) {
-    db.notiLast(function (row) {
+    // skip notification
+    return;
+    let sendNoti = function (row) {
         var now = new Date();
-        var newContent = {[time.local()]: newNoti};
+        var newContent = { [time.local()]: newNoti };
         var array = [];
         if (row) {
             var diffHours = (now - row.date_added) / 3600000;
@@ -13,12 +15,10 @@ module.exports = function (newNoti) {
             console.log(array);
             array.push(newContent);
             db.notiUpdate(row.date_added, JSON.stringify(array));
-
             var content = array.map(function (x) {
                 var key = Object.keys(x)[0];
                 return key + ':\n' + x[key];
             }).join('\n\n');
-
             console.log('diffHours: ' + diffHours + ', out: \n' + content);
             if (diffHours > 4) {
                 pushBullet('qapla', content);
@@ -29,11 +29,11 @@ module.exports = function (newNoti) {
             array.push(newContent);
             db.notiNew(now, JSON.stringify(array));
         }
-    });
+    };
+    db.notiLast(sendNoti);
 };
 
-
-function pushBullet(title, content) {
+function pushBullet (title, content) {
     var options = {
         url: 'https://api.pushbullet.com/v2/pushes',
         headers: {
